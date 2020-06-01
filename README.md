@@ -113,7 +113,7 @@ client demo在``app-demo``子工程可以看到，直接运行app-demo，即可�
 
 Sekiro本身不提供代码注入功能，不过Sekiro一般需要和代码注入框架配合产生作用，如和Xposed配合，可以方便调用app内部私有API，一般情况下，在Xposed入口启动Sekiro，然后接受服务器指令,并将参数转发到app内部。
 
-Sekiro调用真实apk的例子： https://github.com/virjar/sekiro-demo  在微视中，注入代码进行搜索请求暴露，可绕过qq的jce解析解析
+Sekiro调用真实apk的例子： *为避免风险，现已经移除Demo*
 
 
 # 服务器异步http
@@ -325,7 +325,62 @@ virjar-share:com.southwestairlines.mobile virjar$ adb logcat -s Sekiro
 
 如果你想托管日志输出规则，那么通过静态方法:``com.virjar.sekiro.log.SekiroLogger.setLogger(com.virjar.sekiro.log.ILogger logger)``覆盖默认实现即可
 
+
+## 其他语言
+
+目前sekiro定位为Android框架，如果你在其他平台，或者使用java以外的语言接入sekiro，那么你需要自己实现Sekiro的交互协议
+
+协议参见Sekiro二进制协议文档: [protoal.md](protocal.md)
+
+### web注入
+
+Sekiro已支持websocket协议，使用本功能可以支持注入js到浏览器后，调用浏览器环境的js代码。
+Web环境基于WebSocket实现，使用方法也很简单:
+
+```
+ <script type="text/javascript" src="http://file.virjar.com/sekiro_web_client.js?_=123"></script>
+    <script type="text/javascript">
+
+        var client = new SekiroClient("wss://sekiro.virjar.com/websocket?group=ws-group&clientId=testClient");
+        client.registerAction("clientTime",function(request, resolve,reject ){
+            resolve(""+new Date());
+        })
+
+    </script>
+```
+
+你可以运行我们提供的demo测试Sekiro的JS RPC能力 [js_rpc_sekiro_demo.html](jsclient/sekiro_demo.html)
+
+![sekiro_demo.gif](jsclient/sekiro_demo.gif)
+
+
+### ssl问题
+如果你要注入的网页是https的，那么直接通过我们的websocket服务会被浏览器拦截。那么你需要使得你的服务器支持ssl WebSocket，Sekiro的demo网站已经完成了相关配置。
+此时你应该使用 ``wss:``协议替代:``ws:``,如：``wss://sekiro.virjar.com/websocket?group=ws-group&clientId=testClient``
+
+## 相关分析文章
+
+[https://github.com/langgithub/sekiro-lang](https://github.com/langgithub/sekiro-lang)
+
+[https://bbs.nightteam.cn/thread-86.htm](https://bbs.nightteam.cn/thread-86.htm)
+
+[https://www.jianshu.com/p/6b71106c45eb?from=timeline](https://www.jianshu.com/p/6b71106c45eb?from=timeline)
+
 ## qq Group
 
 569543649
+
+#### 合作
+
+开源即免费，我不限制你们拿去搞事情，但是开源并不代表义务解答问题。如果你发现了有意思的bug，或者有建设性意见，我乐意参与讨论。
+如果你想寻求解决方案，但是又没有能力驾驭这个项目，欢迎走商务合作通道。联系qq：819154316，或者加群：569543649。
+拒绝回答常见问题！！！
+
+#### 内部培训
+Sekiro高阶培训和部分抓取技术课程可在此连接购买 [猿人学·爬虫进阶课](https://detail.youzan.com/show/goods?alias=2okabph85ypv1&activity_alias=undefined)
+
+
+#### 捐赠
+如果你觉得作者辛苦了，可以的话请我喝杯咖啡
+![alipay](deploy/reward.jpg)
 

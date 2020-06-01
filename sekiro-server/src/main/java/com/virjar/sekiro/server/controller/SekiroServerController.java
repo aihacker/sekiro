@@ -37,6 +37,9 @@ public class SekiroServerController {
     @GetMapping("/natChannelStatus")
     @ResponseBody
     public CommonRes<?> natChannelStatus(String group) {
+        if (StringUtils.isBlank(group)) {
+            return CommonRes.failed("the param:{group} not present");
+        }
         List<String> stringListMap = ChannelRegistry.getInstance().channelStatus(group);
         return CommonRes.success(stringListMap);
     }
@@ -46,6 +49,12 @@ public class SekiroServerController {
     public CommonRes<?> groupList() {
         List<String> stringListMap = ChannelRegistry.getInstance().channelList();
         return CommonRes.success(stringListMap);
+    }
+
+    @GetMapping("/disconnectClient")
+    @ResponseBody
+    public CommonRes<?> disconnectClient(String group, String clientId) {
+        return CommonRes.success(ChannelRegistry.getInstance().forceDisconnect(group, clientId));
     }
 
     @RequestMapping(value = "/invoke", method = {RequestMethod.GET, RequestMethod.POST})
